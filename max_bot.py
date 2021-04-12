@@ -9,7 +9,7 @@ from time import time
 import telebot
 from telebot import types
 
-from max_mind import max_setup, get_thought, get_fixed_thought, get_joke_b, get_joke_shizo
+from max_mind import max_setup, get_thought, get_fixed_thought, get_joke_b
 
 
 def get_token():
@@ -113,7 +113,7 @@ def message_listener(*msgs):
 					thought = ''
 					var = ''
 					if randint(0, 10) > 8:
-						thought = get_fixed_thought('max_mind/fixed.txt')
+						thought = get_fixed_thought()
 						var = 'fixed'
 					else:
 						thought = get_thought()
@@ -123,7 +123,7 @@ def message_listener(*msgs):
 						bot.send_message(message.chat.id, thought)
 					except:
 						thought = 'Мысль огромная как ваш хуй, Шэф! Не могу так долго говорить.'
-						var = 'error - too long'
+						var = 'error - responce too long'
 						bot.send_message(message.chat.id, thought)
 					STATE['is_listening'][message.chat.id] = time()
 					print(f'[{msg_id}] MaxLavrov_bot: {thought}\n\t/// ANSWER GIVEN : {var} ///')
@@ -147,7 +147,7 @@ def message_listener(*msgs):
 				elif 'анек' in msg:
 					var = ''
 					if randint(0, 10) > 8:
-						joke = get_joke_shizo()
+						joke = get_joke_b('\n')
 						var = 'shizo'
 					else:
 						joke = get_joke_b()
@@ -156,7 +156,7 @@ def message_listener(*msgs):
 						bot.send_message(message.chat.id, joke)
 					except:
 						joke = 'Анекдот моего деде, он его 4 дня рассказывал и помер. Я не буду рисковать.'
-						var = 'error - too long'
+						var = 'error - responce too long'
 						bot.send_message(message.chat.id, joke)
 					STATE['is_listening'][message.chat.id] = time()
 					print(f'[{msg_id}] MaxLavrov_bot: "{joke}"\n\t/// JOKE GIVEN : {var} ///')

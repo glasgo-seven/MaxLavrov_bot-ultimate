@@ -42,20 +42,7 @@ def strip_from_marks(line):
 		line = line.lower().replace(mark, '')
 	return line
 
-# def get_MC_from_file(filename):
-# 	global MARKOV_CHAIN, FIRST_WORDS
-# 	fin = codecs.open(filename, encoding='utf-8')
-# 	for line in fin:
-# 		words = line.strip().split()
-# 		add_to_dict(FIRST_WORDS, words[0])
-# 		add_to_dict(MARKOV_CHAIN, words[0], dict())
-# 		for i in range(1, len(words)):
-# 			if (words[i - 1][-1] in sentence_end):
-# 				add_to_dict(FIRST_WORDS, words[i])
-# 			add_to_dict(MARKOV_CHAIN[words[i - 1]].nodes, words[i])
-# 			add_to_dict(MARKOV_CHAIN, words[i], dict())
-
-def get_MC_from_file_test(filename):
+def mc_build_from_file(filename):
 	global MARKOV_CHAIN, FIRST_WORDS
 	fin = codecs.open(filename, encoding='utf-8')
 	for line in fin:
@@ -76,7 +63,7 @@ def get_all_nodes(_dict):
 		s += _dict[key].edges
 	return s
 
-def calc_weights():
+def mc_calculate_weights():
 	firsts = get_all_nodes(FIRST_WORDS)
 	for key in FIRST_WORDS:
 		FIRST_WORDS[key].weight = FIRST_WORDS[key].edges / firsts
@@ -90,7 +77,7 @@ def calc_weights():
 	for key in LAST_WORDS:
 		LAST_WORDS[key].weight = LAST_WORDS[key].edges / lasts
 
-def get_word():
+def mc_get_sentence():
 	sentence = ''
 	prev = ''
 	
@@ -137,9 +124,10 @@ def save_jokes():
 		fin.write(joke['text'] + '~\n')
 	fin.close()
 
-# get_MC_from_file_test("./max_mind/div.txt")
-# calc_weights()
+# mc_build_from_file("./max_mind/div.txt")
+# mc_calculate_weights()
 # save_jokes()
+# mc_get_sentence()
 # print("\n-MARKOV---------\n")
 # print_dict(MARKOV_CHAIN)
 # print("\n-FIRST----------\n")
