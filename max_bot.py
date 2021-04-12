@@ -9,34 +9,50 @@ from time import time
 import telebot
 from telebot import types
 
-from max_learn import get_thought, get_fixed_thought, get_joke_b
+from max_mind import max_setup, get_thought, get_fixed_thought, get_joke_b, get_joke_shizo
 
 
 def get_token():
 	return open('.token', 'r').read()
 
+# v0.3
+print('\n----------------\n/// MAX IS LEARNING ///\n')
+max_setup()
+print('/// MAX READY ///\n')
+
 bot = telebot.TeleBot(get_token())
 STATE = {
-	'rage'			:	0,
-	'is_listening'	:	False,
-	'is_thought'	:	False
+	'rage'			:	dict(),
+	'is_listening'	:	dict(),
+	'is_thought'	:	list()
 }
-response_time = 0
+rage_trashhold = 10
+RAGE_ANS = [
+	'Да что блять?',
+	'Как же ты заебал... Что?',
+	'Сука, когда же я подохну блять!? Что тебе?'
+]
+RAGE_ANS_LEN = len(RAGE_ANS)
 NICKNAMES = {
 	'макс'	:	0,
 	'огуз'	:	1,
 	'хох'	:	1,
 	'мраз'	:	2,
 	'ублюд'	:	2,
+	'гнид'	:	3,
 	'пидрил':	3,
-	'пидор'	:	3
+	'пидор'	:	3,
+	'уеб'	:	3
 }
-
+the_lost_song_url = 'https://ostonline.net/dll/2019-11/8778.mp3'
+fish_url = 'https://sun9-41.userapi.com/impg/BuQ1UhAIP-BbijhGI8ZmKwEw6cbd4eybm2blTw/y0K31boROSo.jpg?size=1080x676&quality=96&sign=bab6b5c9dca718f99876bcbc1c55f719&type=album'
+max_dead_url = 'https://ibb.co/fGJkVQ4'
 
 @bot.message_handler(commands=['karabas'])
 def stop_command(message: types.Message):
-	bot.send_message(message.from_user.id, text='Ладно, я поехал.')
-	print('\t/// BOT WILL BE STOPPED ///\nMaxLavrov_bot: "Ладно, я поехал."')
+	bot.send_message(message.chat.id, text='Ладно, я поехал.')
+	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
+	print(f'[{msg_id}] MaxLavrov_bot: "Ладно, я поехал."\n\t/// BOT WILL BE STOPPED ///')
 
 	os.system('python ./max_killer.py ' + str(os.getpid()))
 
@@ -55,76 +71,109 @@ def get_name_anger(name):
 def message_listener(*msgs):
 	for message in msgs:
 		message = message[0]
+		msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
 		if message.content_type == 'text':
-			global STATE, response_time
-			now = time()
-			print(f'{message.from_user.username}: "{message.text}"')
+			global STATE
+			if message.chat.id in STATE['is_listening']:
+				print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
 
-			if response_time != 0 and now - response_time >= 600:
+			if message.chat.id in STATE['is_listening'] and time() - STATE['is_listening'][message.chat.id] >= 600:
 				print(f'\t/// NOW - {now} | PREV - {response_time} ///\n\t/// LISTENING NO MORE ///')
-				STATE['is_listening'] = False
-				STATE['is_thought'] = False
+				STATE['is_listening'].clear()
+				STATE['is_thought'].clear()
 
 			msg = message.text.lower()
 
-			if STATE['is_thought']:
+			if message.chat.id in STATE['is_thought']:
 				bot.send_message(message.chat.id, 'Да ты еблан похлеще меня! Я это запишу...')
-				file = codecs.open('./max_mind/new.txt', 'a', encoding='utf-8')
+				file = codecs.open('./max_mind/user.txt', 'a', encoding='utf-8')
 				file.write(message.text + '\n')
-				STATE['is_thought'] = False
-				response_time = time()
-				print('MaxLavrov_bot: "Да ты еблан похлеще меня! Я это запишу..."\n\t/// NEW THOUGHT SAVED | LISTENING FOR THOUGHTS NO MORE ///')
-			elif 'кринжа' in msg:
+				STATE['is_thought'].remove(message.chat.id)
+				STATE['is_listening'][message.chat.id] = time()
+				print(f'[{msg_id}] MaxLavrov_bot: "Да ты еблан похлеще меня! Я это запишу..."\n\t/// NEW THOUGHT SAVED | LISTENING FOR THOUGHTS NO MORE ///')
+			elif 'кринж' in msg:
+				if not message.chat.id in STATE['is_listening']:
+					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
 				bot.send_message(message.chat.id, '\U0001F918')
-				response_time = time()
-				print('MaxLavrov_bot: "\U0001F918"')
+				# response_time = time()
+				print(f'[{msg_id}] MaxLavrov_bot: "\U0001F918"')
 			elif is_name(msg):
+				if not message.chat.id in STATE['is_listening']:
+					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
 				anger = get_name_anger(msg)
-				if STATE['rage'] >= 5:
-					STATE['rage'] = 0
-				STATE['rage'] += anger
-				ans = 'Да, Шэф?' if STATE['rage'] < 5 else ['Да что блять?', 'Как же ты заебал... Что?', 'Сука, когда же я подохну блять!? Что тебе?'][randint(0, 3)]
+				if not message.chat.id in STATE['rage'] or STATE['rage'][message.chat.id] >= rage_trashhold:
+					STATE['rage'][message.chat.id] = 0
+				STATE['rage'][message.chat.id] += anger
+				ans = 'Да, Шэф?' if STATE['rage'][message.chat.id] < rage_trashhold else RAGE_ANS[randint(0, RAGE_ANS_LEN)]
 				bot.send_message(message.chat.id, ans)
-				STATE['is_listening'] = True
-				response_time = time()
-				print(f'MaxLavrov_bot: "{ans}"\n\t/// LISTENING FOR REQUEST | RAGE = {STATE["rage"]} ///')
-			elif STATE['is_listening']:
+				STATE['is_listening'][message.chat.id] = time()
+				print(f'[{msg_id}] MaxLavrov_bot: "{ans}"\n\t/// LISTENING FOR REQUEST | RAGE = {STATE["rage"]} ///')
+			elif message.chat.id in STATE['is_listening']:
 				if 'думаешь' in msg:
 					thought = ''
+					var = ''
 					if randint(0, 10) > 8:
-						thought = get_fixed_thought('max_mind_fixed.txt')
+						thought = get_fixed_thought('max_mind/fixed.txt')
+						var = 'fixed'
 					else:
 						thought = get_thought()
-					bot.send_audio(message.chat.id, 'https://ostonline.net/dll/2019-11/8778.mp3')
-					bot.send_message(message.chat.id, thought)
-					response_time = time()
-					print(f'MaxLavrov_bot: {thought}\n\t/// ANSWER GIVEN ///')
+						var = 'generated'
+					bot.send_audio(message.chat.id, the_lost_song_url)
+					try:
+						bot.send_message(message.chat.id, thought)
+					except:
+						thought = 'Мысль огромная как ваш хуй, Шэф! Не могу так долго говорить.'
+						var = 'error - too long'
+						bot.send_message(message.chat.id, thought)
+					STATE['is_listening'][message.chat.id] = time()
+					print(f'[{msg_id}] MaxLavrov_bot: {thought}\n\t/// ANSWER GIVEN : {var} ///')
 				elif 'как дела' in msg:
-					bot.send_message(message.chat.id, 'У нас свежей завоз. Сёмга - 850 рублей за 1кг.')
-					bot.send_photo(message.chat.id, 'https://sun9-41.userapi.com/impg/BuQ1UhAIP-BbijhGI8ZmKwEw6cbd4eybm2blTw/y0K31boROSo.jpg?size=1080x676&quality=96&sign=bab6b5c9dca718f99876bcbc1c55f719&type=album');
-					response_time = time()
-					print('MaxLavrov_bot: "У нас свежей завоз. Сёмга - 850 рублей за 1кг."\nMaxLavrov_bot: <photo>')
+					var = ''
+					if randint(0, 10) > 8:
+						bot.send_photo(message.chat.id, max_dead_url)
+						var = 'max_dead_url'
+					else:
+						# bot.send_message(message.chat.id, 'У нас свежей завоз. Сёмга - 850 рублей за 1кг.')
+						bot.send_photo(message.chat.id, fish_url);
+						var = 'fish_url'
+						# print(f'[{msg_id}] MaxLavrov_bot: "У нас свежей завоз. Сёмга - 850 рублей за 1кг."')
+					STATE['is_listening'][message.chat.id] = time()
+					print(f'[{msg_id}] MaxLavrov_bot: <photo: {var}>')
 				elif 'новая мысль' in msg:
 					bot.send_message(message.chat.id, 'Я запомню следующую мысль!')
-					STATE['is_thought'] = True
-					response_time = time()
-					print('MaxLavrov_bot: "Я запомню следующую мысль!"\n\t/// LISTENING FOR NEW THOUGHT ///')
-				elif 'расскажи анекдот' in msg:
-					joke = get_joke_b()
-					bot.send_message(message.chat.id, joke)
-					response_time = time()
-					print(f'MaxLavrov_bot: "{joke}"\n\t/// ANSWER GIVEN ///')
+					STATE['is_thought'].append(message.chat.id)
+					STATE['is_listening'][message.chat.id] = time()
+					print(f'[{msg_id}] MaxLavrov_bot: "Я запомню следующую мысль!"\n\t/// LISTENING FOR NEW THOUGHT ///')
+				elif 'анек' in msg:
+					var = ''
+					if randint(0, 10) > 8:
+						joke = get_joke_shizo()
+						var = 'shizo'
+					else:
+						joke = get_joke_b()
+						var = 'b'
+					try:
+						bot.send_message(message.chat.id, joke)
+					except:
+						joke = 'Анекдот моего деде, он его 4 дня рассказывал и помер. Я не буду рисковать.'
+						var = 'error - too long'
+						bot.send_message(message.chat.id, joke)
+					STATE['is_listening'][message.chat.id] = time()
+					print(f'[{msg_id}] MaxLavrov_bot: "{joke}"\n\t/// JOKE GIVEN : {var} ///')
 				elif 'молодец' in msg:
 					bot.send_message(message.chat.id, 'Стараюсь, Шэф!')
-					STATE['is_listening'] = False
-					response_time = 0
-					print('MaxLavrov_bot: "Стараюсь, Шэф!"\n\t/// LISTENING NO MORE ///')
+					STATE['is_listening'].pop(message.chat.id)
+					print(f'[{msg_id}] MaxLavrov_bot: "Стараюсь, Шэф!"\n\t/// LISTENING NO MORE ///')
+				elif 'нахуй' in msg:
+					bot.send_message(message.chat.id, 'Иду нахуй, Шэф!')
+					STATE['is_listening'].pop(message.chat.id)
+					print(f'[{msg_id}] MaxLavrov_bot: "Иду нахуй, Шэф!"\n\t/// LISTENING NO MORE ///')
 		elif message.content_type == 'photo':
-			print(f'{message.from_user.username}: <{message.content_type}>')
+			print(f'[{msg_id}] {message.from_user.username}: <{message.content_type}>')
 			bot.send_message(message.chat.id, 'Шэф, ну не при всей кухне же!')
-			response_time = time()
-			print('MaxLavrov_bot: "Шэф, ну не при всей кухне же!"')
+			STATE['is_listening'][message.chat.id] = time()
+			print(f'[{msg_id}] MaxLavrov_bot: "Шэф, ну не при всей кухне же!"')
 
-print('/// BOT IS POLLING ///\nChat log:\n')
+print('----------------\n/// BOT IS POLLING ///\nChat log:\n')
 bot.set_update_listener(message_listener)
 bot.polling()

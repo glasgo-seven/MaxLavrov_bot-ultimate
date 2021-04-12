@@ -2,8 +2,7 @@
 # coding: utf-8
 
 import codecs
-import random
-import telebot
+from random import random
 
 class MC_Node():
 	def __init__(self, word, nodes=None):
@@ -95,7 +94,7 @@ def get_word():
 	sentence = ''
 	prev = ''
 	
-	P = random.random()
+	P = random()
 	n = 0
 	for key in FIRST_WORDS:
 		if n == 0:
@@ -108,7 +107,7 @@ def get_word():
 			break
 
 	while True:
-		P = random.random()
+		P = random()
 		n = 0
 		for key in MARKOV_CHAIN[prev].nodes:
 			if n == 0:
@@ -120,34 +119,30 @@ def get_word():
 				sentence += ' ' + key
 				break
 		if prev in LAST_WORDS:
-			P = random.random()
+			P = random()
 			if P <= LAST_WORDS[prev].weight:
 				sentence += '.'
 				break
 
 	return sentence
 
+def save_jokes():
+	import vk_api
+	vk_session = vk_api.VkApi(app_id=7800681,
+								token='779cd56c779cd56c779cd56cb977ebd2057779c779cd56c17c6079c50a1fb427d4e1be8');
+	vk = vk_session.get_api()
+	li = vk.wall.get(domain='baneksbest', count=101)
+	fin = codecs.open('./max_mind/jokes.txt', 'w', encoding='utf-8')
+	for joke in li['items']:
+		fin.write(joke['text'] + '~\n')
+	fin.close()
 
-get_MC_from_file_test("./max_mind/div.txt")
-calc_weights()
+# get_MC_from_file_test("./max_mind/div.txt")
+# calc_weights()
+# save_jokes()
 # print("\n-MARKOV---------\n")
 # print_dict(MARKOV_CHAIN)
 # print("\n-FIRST----------\n")
 # print_dict(FIRST_WORDS)
 # print("\n-LAST-----------\n")
 # print_dict(LAST_WORDS)
-
-def get_thought():
-	return get_word()
-
-def get_fixed_thought(filename):
-	return codecs.open(filename, encoding='utf-8').readlines()[random.randint(0, 7)]
-
-def get_joke_b():
-	import vk_api
-	vk_session = vk_api.VkApi(app_id=7800681,
-								token='779cd56c779cd56c779cd56cb977ebd2057779c779cd56c17c6079c50a1fb427d4e1be8');
-	vk = vk_session.get_api()
-	li = vk.wall.get(domain='baneksbest', count=101)
-	anek = li['items'][random.randint(0, 100)]['text']
-	return anek
