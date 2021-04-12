@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import codecs
+import os
 from random import randint
 from time import time
 
@@ -10,7 +11,11 @@ from telebot import types
 
 from max_learn import get_thought, get_fixed_thought, get_joke_b
 
-bot = telebot.TeleBot(TOKEN)
+
+def get_token():
+	return open('.token', 'r').read()
+
+bot = telebot.TeleBot(get_token())
 STATE = {
 	'rage'			:	0,
 	'is_listening'	:	False,
@@ -28,11 +33,12 @@ NICKNAMES = {
 }
 
 
-# @bot.message_handler(commands=['help'])
-# def help_command(message: types.Message):
-# 	print(f'{message.from_user.username}: "{message.text}"')
-# 	bot.send_message(message.from_user.id, text='Напиши:\n"Эй, огузок!", и я начну слушать;\n"О чём думаешь?", и я скажу тебе свою фирменную цитату.')
-# 	print('\t/// SENT HELP ///\nMaxLavrov_bot: help_message')
+@bot.message_handler(commands=['karabas'])
+def stop_command(message: types.Message):
+	bot.send_message(message.from_user.id, text='Ладно, я поехал.')
+	print('\t/// BOT WILL BE STOPPED ///\nMaxLavrov_bot: "Ладно, я поехал."')
+
+	os.system('python ./max_killer.py ' + str(os.getpid()))
 
 
 def is_name(name):
