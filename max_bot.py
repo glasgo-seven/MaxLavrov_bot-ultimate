@@ -16,9 +16,9 @@ def get_token():
 	return open('.token', 'r').read()
 
 # v0.3
-print('\n----------------\n/// MAX IS LEARNING ///\n')
+print('\n------------------------\n/// MAX IS LEARNING ///')
 max_setup()
-print('/// MAX READY ///\n')
+print('/// MAX READY ///')
 
 bot = telebot.TeleBot(get_token())
 STATE = {
@@ -174,6 +174,6 @@ def message_listener(*msgs):
 			STATE['is_listening'][message.chat.id] = time()
 			print(f'[{msg_id}] MaxLavrov_bot: "Шэф, ну не при всей кухне же!"')
 
-print('----------------\n/// BOT IS POLLING ///\nChat log:\n')
+print('------------------------\n/// BOT IS POLLING ///\n\nChat log:\n')
 bot.set_update_listener(message_listener)
 bot.polling()
