@@ -49,10 +49,14 @@ the_lost_song_url = 'https://ostonline.net/dll/2019-11/8778.mp3'
 fish_url = 'https://sun9-41.userapi.com/impg/BuQ1UhAIP-BbijhGI8ZmKwEw6cbd4eybm2blTw/y0K31boROSo.jpg?size=1080x676&quality=96&sign=bab6b5c9dca718f99876bcbc1c55f719&type=album'
 max_dead_url = 'https://ibb.co/fGJkVQ4'
 
+
 @bot.message_handler(commands=['karabas'])
 def stop_command(message: types.Message):
-	bot.send_message(message.chat.id, text='Ладно, я поехал.')
 	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
+	try:
+		file = open('./max_mind/user.txt')
+		bot.send_document(message.chat.id, file)
+	bot.send_message(message.chat.id, text='Ладно, я поехал.')
 	print(f'[{msg_id}] MaxLavrov_bot: "Ладно, я поехал."\n\t/// BOT WILL BE STOPPED ///')
 
 	os.system('python ./max_killer.py ' + str(os.getpid()))
@@ -66,8 +70,8 @@ def get_user_thoughts_command(message: types.Message):
 		bot.send_document(message.chat.id, file)
 		print(f'[{msg_id}] MaxLavrov_bot: "Вот что люди говорят:"\n[{msg_id}] MaxLavrov_bot: <document>\n\t/// USER THOUGHTS SENT ///')
 	except FileNotFoundError:
+		bot.send_message(message.chat.id, text='Никто ещё ничего мне не сказал.')
 		print(f'[{msg_id}] MaxLavrov_bot: "Никто ещё ничего мне не сказал."\n\t/// NO USER THOUGHTS FOUND ///')
-
 
 @bot.message_handler(commands=['update_jokes'])
 def update_jokes_command(message: types.Message):
