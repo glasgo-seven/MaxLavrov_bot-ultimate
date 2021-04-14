@@ -56,10 +56,10 @@ def stop_command(message: types.Message):
 	try:
 		file = open('./max_mind/user.txt')
 		bot.send_document(message.chat.id, file)
-	bot.send_message(message.chat.id, text='Ладно, я поехал.')
-	print(f'[{msg_id}] MaxLavrov_bot: "Ладно, я поехал."\n\t/// BOT WILL BE STOPPED ///')
-
-	os.system('python ./max_killer.py ' + str(os.getpid()))
+	finally:
+		bot.send_message(message.chat.id, text='Ладно, я поехал.')
+		print(f'[{msg_id}] MaxLavrov_bot: "Ладно, я поехал."\n\t/// BOT WILL BE STOPPED ///')
+		os.system('python ./max_killer.py ' + str(os.getpid()))
 
 @bot.message_handler(commands=['get_user_thoughts'])
 def get_user_thoughts_command(message: types.Message):
