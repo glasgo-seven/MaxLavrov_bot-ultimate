@@ -59,11 +59,15 @@ def stop_command(message: types.Message):
 
 @bot.message_handler(commands=['get_user_thoughts'])
 def get_user_thoughts_command(message: types.Message):
-	bot.send_message(message.chat.id, text='Вот что люди говорят:')
-	file = open('./max_mind/user.txt')
-	bot.send_document(message.chat.id, file)
 	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
-	print(f'[{msg_id}] MaxLavrov_bot: "Вот что люди говорят:"\n[{msg_id}] MaxLavrov_bot: <document>\n\t/// USER THOUGHTS SENT ///')
+	try:
+		file = open('./max_mind/user.txt')
+		bot.send_message(message.chat.id, text='Вот что люди говорят:')
+		bot.send_document(message.chat.id, file)
+		print(f'[{msg_id}] MaxLavrov_bot: "Вот что люди говорят:"\n[{msg_id}] MaxLavrov_bot: <document>\n\t/// USER THOUGHTS SENT ///')
+	except FileNotFoundError:
+		print(f'[{msg_id}] MaxLavrov_bot: "Никто ещё ничего мне не сказал."\n\t/// NO USER THOUGHTS FOUND ///')
+
 
 @bot.message_handler(commands=['update_jokes'])
 def update_jokes_command(message: types.Message):
