@@ -95,7 +95,7 @@ def message_listener(*msgs):
 				print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
 
 			if message.chat.id in STATE['is_listening'] and time() - STATE['is_listening'][message.chat.id] >= 600:
-				print(f'\t/// NOW - {now} | PREV - {response_time} ///\n\t/// LISTENING NO MORE ///')
+				print(f'\t/// NOW - {time()} | PREV - {response_time} ///\n\t/// LISTENING NO MORE ///')
 				STATE['is_listening'].clear()
 				STATE['is_thought'].clear()
 
