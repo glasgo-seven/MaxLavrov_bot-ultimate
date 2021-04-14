@@ -10,7 +10,7 @@ import telebot
 from telebot import types
 
 from max_mind import max_setup, get_thought, get_fixed_thought, get_joke_b
-
+from max_learn import save_jokes
 
 def get_token():
 	# return open('.token', 'r').read()
@@ -57,6 +57,22 @@ def stop_command(message: types.Message):
 
 	os.system('python ./max_killer.py ' + str(os.getpid()))
 
+@bot.message_handler(commands=['get_user_thoughts'])
+def get_user_thoughts_command(message: types.Message):
+	bot.send_message(message.chat.id, text='Вот что люди говорят:')
+	file = open('./max_mind/user.txt')
+	bot.send_document(message.chat.id, file)
+	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
+	print(f'[{msg_id}] MaxLavrov_bot: "Вот что люди говорят:"\n[{msg_id}] MaxLavrov_bot: <document>\n\t/// USER THOUGHTS SENT ///')
+
+@bot.message_handler(commands=['update_jokes'])
+def update_jokes_command(message: types.Message):
+	bot.send_message(message.chat.id, text='Надеюсь там будет анекдот про двух лордов...')
+	save_jokes()
+	bot.send_message(message.chat.id, text='Готово!')
+	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
+	print(f'[{msg_id}] MaxLavrov_bot: "Надеюсь там будет анекдот про двух лордов..."\n[{msg_id}] MaxLavrov_bot: "Готово!"\n\t/// JOKES UPDATED ///')
+
 
 def is_name(name):
 	for n in NICKNAMES:
@@ -96,8 +112,12 @@ def message_listener(*msgs):
 				if not message.chat.id in STATE['is_listening']:
 					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
 				bot.send_message(message.chat.id, '\U0001F918')
-				# response_time = time()
 				print(f'[{msg_id}] MaxLavrov_bot: "\U0001F918"')
+			elif 'хах' in msg:
+				if not message.chat.id in STATE['is_listening']:
+					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
+				bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAECL1Fgd1gAAarkud3KyoiUMaV1PK7Ylh8AAu2DAAKezgsAAZmqKq7ZUGksHwQ')
+				print(f'[{msg_id}] MaxLavrov_bot: <sticker>')
 			elif is_name(msg):
 				if not message.chat.id in STATE['is_listening']:
 					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
@@ -156,7 +176,7 @@ def message_listener(*msgs):
 					try:
 						bot.send_message(message.chat.id, joke)
 					except:
-						joke = 'Анекдот моего деде, он его 4 дня рассказывал и помер. Я не буду рисковать.'
+						joke = 'Анекдот моего деда, он его 4 дня рассказывал и помер. Я не буду рисковать.'
 						var = 'error - responce too long'
 						bot.send_message(message.chat.id, joke)
 					STATE['is_listening'][message.chat.id] = time()
