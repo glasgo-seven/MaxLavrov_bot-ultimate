@@ -4,7 +4,7 @@
 import codecs
 import os
 from random import randint
-from time import time
+from time import time, sleep
 
 import telebot
 from telebot import types
@@ -126,6 +126,13 @@ def message_listener(*msgs):
 					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
 				bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAECL1Fgd1gAAarkud3KyoiUMaV1PK7Ylh8AAu2DAAKezgsAAZmqKq7ZUGksHwQ')
 				print(f'[{msg_id}] MaxLavrov_bot: <sticker>')
+			elif 'запус' in msg and 'крыс' in msg:
+				if not message.chat.id in STATE['is_listening']:
+					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
+				for i in range(10):
+					bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAECL1Fgd1gAAarkud3KyoiUMaV1PK7Ylh8AAu2DAAKezgsAAZmqKq7ZUGksHwQ')
+					print(f'[{msg_id}] MaxLavrov_bot: <sticker>')
+					sleep(0.5)
 			elif is_name(msg):
 				if not message.chat.id in STATE['is_listening']:
 					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
