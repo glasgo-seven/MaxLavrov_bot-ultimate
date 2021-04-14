@@ -4,7 +4,7 @@
 import codecs
 from random import randint
 
-from max_learn import mc_build_from_file, mc_calculate_weights, mc_get_sentence
+from max_learn import mc_build_from_file, mc_calculate_weights, mc_get_sentence, save_jokes
 
 def max_setup():
 	mc_build_from_file("./max_mind/div.txt")
@@ -25,8 +25,15 @@ def get_fixed_thought():
 	return thought
 
 def get_joke_b(sep='~'):
-	fin = codecs.open('./max_mind/jokes.txt', 'r', encoding='utf-8')
-	li = fin.read().split(sep)
-	joke = li[randint(0, len(li) - 1)]
-	fin.close()
-	return joke
+	try:
+		fin = codecs.open('./max_mind/jokes.txt', 'r', encoding='utf-8')
+	except FileNotFoundError:
+		print('\t/// ./max_mind/jokes.txt DOES NOT EXIST ///')
+		save_jokes()
+		fin = codecs.open('./max_mind/jokes.txt', 'r', encoding='utf-8')
+		print('\t/// ./max_mind/jokes.txt WAS CREATED ///')
+	finally:
+		li = fin.read().split(sep)
+		joke = li[randint(0, len(li) - 1)]
+		fin.close()
+		return joke
