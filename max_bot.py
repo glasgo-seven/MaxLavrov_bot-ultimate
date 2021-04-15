@@ -16,7 +16,7 @@ def get_token():
 	# return open('.token', 'r').read()
 	return os.getenv('BOT_TOKEN')
 
-# v0.3.4
+
 print('\n------------------------\n/// MAX IS LEARNING ///')
 max_setup()
 print('/// MAX READY ///')
@@ -48,6 +48,7 @@ NICKNAMES = {
 the_lost_song_url = 'https://ostonline.net/dll/2019-11/8778.mp3'
 fish_url = 'https://sun9-41.userapi.com/impg/BuQ1UhAIP-BbijhGI8ZmKwEw6cbd4eybm2blTw/y0K31boROSo.jpg?size=1080x676&quality=96&sign=bab6b5c9dca718f99876bcbc1c55f719&type=album'
 max_dead_url = 'https://ibb.co/fGJkVQ4'
+lolrat_sticker = 'CAACAgIAAxkBAAECL1Fgd1gAAarkud3KyoiUMaV1PK7Ylh8AAu2DAAKezgsAAZmqKq7ZUGksHwQ'
 
 
 @bot.message_handler(commands=['karabas'])
@@ -62,16 +63,36 @@ def stop_command(message: types.Message):
 		os.system('python ./max_killer.py ' + str(os.getpid()))
 
 @bot.message_handler(commands=['get_user_thoughts'])
-def get_user_thoughts_command(message: types.Message):
+def help_command(message: types.Message):
 	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
-	try:
-		file = open('./max_mind/user.txt')
-		bot.send_message(message.chat.id, text='Вот что люди говорят:')
-		bot.send_document(message.chat.id, file)
-		print(f'[{msg_id}] MaxLavrov_bot: "Вот что люди говорят:"\n[{msg_id}] MaxLavrov_bot: <document>\n\t/// USER THOUGHTS SENT ///')
-	except FileNotFoundError:
-		bot.send_message(message.chat.id, text='Никто ещё ничего мне не сказал.')
-		print(f'[{msg_id}] MaxLavrov_bot: "Никто ещё ничего мне не сказал."\n\t/// NO USER THOUGHTS FOUND ///')
+	bot.send_message(message.chat.id, text='\\
+Позови меня "Макс", "Огузок" или просто "Пидор".\\
+Спроси "О чём думаешь?" и я выдам тебе свою умную мысль, сгенерированную специально для тебя.\\
+Спроси "Как дела?" и я выдам тебе смешную картинку, описывающую моё состояние.\\
+Если у тебя есть какая-либо своя мысль, достойная внимания, напиши "Новая мысль", и я её запомню. Возможно...\\
+Если хочешь послушать анекдот, напиши "Анекдот". Иногда они странные, но мне нравятся.\\
+Если я тебе больше не нужен, напиши "Молодец" или пошли меня нахуй. По настроению.\\
+\\
+Ещё я слежу за некоторыми ключевыми словами:\\
+"хах", "кринж", "запусти крысу".\\
+\\
+Мои команды:\\
+/update_jokes - Обновляет список анекдотов.\\
+\\
+v0.4 и всё может сломаться и обязательно сломается. Я уверен.')
+	print(f'[{msg_id}] MaxLavrov_bot: help_message\n\t/// HELP MESSAGE SENT ///')
+
+# @bot.message_handler(commands=['get_user_thoughts'])
+# def get_user_thoughts_command(message: types.Message):
+# 	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
+# 	try:
+# 		file = open('./max_mind/user.txt')
+# 		bot.send_message(message.chat.id, text='Вот что люди говорят:')
+# 		bot.send_document(message.chat.id, file)
+# 		print(f'[{msg_id}] MaxLavrov_bot: "Вот что люди говорят:"\n[{msg_id}] MaxLavrov_bot: <document>\n\t/// USER THOUGHTS SENT ///')
+# 	except FileNotFoundError:
+# 		bot.send_message(message.chat.id, text='Никто ещё ничего мне не сказал.')
+# 		print(f'[{msg_id}] MaxLavrov_bot: "Никто ещё ничего мне не сказал."\n\t/// NO USER THOUGHTS FOUND ///')
 
 @bot.message_handler(commands=['update_jokes'])
 def update_jokes_command(message: types.Message):
@@ -124,7 +145,7 @@ def message_listener(*msgs):
 			elif 'хах' in msg:
 				if not message.chat.id in STATE['is_listening']:
 					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
-				bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAECL1Fgd1gAAarkud3KyoiUMaV1PK7Ylh8AAu2DAAKezgsAAZmqKq7ZUGksHwQ')
+				bot.send_sticker(message.chat.id, lolrat_sticker)
 				print(f'[{msg_id}] MaxLavrov_bot: <sticker>')
 			elif 'запус' in msg and 'крыс' in msg:
 				if not message.chat.id in STATE['is_listening']:
@@ -132,7 +153,7 @@ def message_listener(*msgs):
 				for i in range(10):
 					bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAECL1Fgd1gAAarkud3KyoiUMaV1PK7Ylh8AAu2DAAKezgsAAZmqKq7ZUGksHwQ')
 					print(f'[{msg_id}] MaxLavrov_bot: <sticker>')
-					sleep(0.5)
+					sleep(1)
 			elif is_name(msg):
 				if not message.chat.id in STATE['is_listening']:
 					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
