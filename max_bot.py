@@ -77,7 +77,7 @@ def help_command(message: types.Message):
 /help_full - Полная помощь по функционалу бота.\n\
 /update_jokes - Обновляет список анекдотов.\n\
 \n\
-\U0001F505v0.4 by glasgo_seven')
+\U0001F505v0.4 by @glasgo_seven')
 	print(f'[{msg_id}] MaxLavrov_bot: help_message\n\t/// HELP MESSAGE SENT ///')
 
 @bot.message_handler(commands=['help_full'])
@@ -112,7 +112,8 @@ def help_full_command(message: types.Message):
 /help_full - Полная помощь по функционалу бота.\n\
 /update_jokes - Обновляет список анекдотов.\n\
 \n\
-\U0001F505v0.4 и всё может сломаться и обязательно сломается. Я уверен.')
+\U0001F505v0.4 by @glasgo_seven.\n\
+Всё может сломаться и обязательно сломается. Я уверен.')
 	print(f'[{msg_id}] MaxLavrov_bot: help_message\n\t/// HELP_FULL MESSAGE SENT ///')
 
 # @bot.message_handler(commands=['get_user_thoughts'])
