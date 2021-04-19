@@ -1,5 +1,5 @@
 # MaxLavrov_bot
-### Telegram: `@MaxLavrov_bot`
+### Telegram: [@MaxLavrov_bot](http://t.me/MaxLavrov_bot)
 
 ### Версии
 ######	v1.1.43	[DEPLOY]
