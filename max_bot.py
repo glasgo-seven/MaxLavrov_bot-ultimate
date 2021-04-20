@@ -13,8 +13,8 @@ from max_mind import max_setup, get_thought, get_fixed_thought, get_joke_b
 from max_learn import save_jokes
 
 def get_token():
-	return open('.token', 'r').read()
-	# return os.getenv('BOT_TOKEN')
+	# return open('.token', 'r').read()
+	return os.getenv('BOT_TOKEN')
 
 
 print('\n------------------------\n/// MAX IS LEARNING ///')
