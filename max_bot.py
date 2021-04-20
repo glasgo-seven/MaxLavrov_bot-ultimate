@@ -164,10 +164,14 @@ def message_listener(*msgs):
 			if message.chat.id in STATE['is_listening']:
 				print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
 
-			if message.chat.id in STATE['is_listening'] and time() - STATE['is_listening'][message.chat.id] >= 600:
-				print(f'\t/// NOW - {time()} | PREV - {response_time} ///\n\t/// LISTENING NO MORE ///')
-				STATE['is_listening'].clear()
-				STATE['is_thought'].clear()
+			if message.chat.id in STATE['is_listening'] and time() - STATE['is_listening'][message.chat.id] >= 10:
+				prev = STATE['is_listening'][message.chat.id]
+				print(f'\t/// NOW - {time()} | PREV - {prev} ///\n\t/// LISTENING NO MORE AT chat_id:{message.chat.id} ///')
+				try:
+					if STATE['is_thought']:
+						STATE['is_thought'].pop(message.chat.id)
+				finally:
+					STATE['is_listening'].pop(message.chat.id)
 
 			msg = message.text.lower()
 
