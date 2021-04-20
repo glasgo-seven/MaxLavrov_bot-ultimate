@@ -13,8 +13,8 @@ from max_mind import max_setup, get_thought, get_fixed_thought, get_joke_b
 from max_learn import save_jokes
 
 def get_token():
-	# return open('.token', 'r').read()
-	return os.getenv('BOT_TOKEN')
+	return open('.token', 'r').read()
+	# return os.getenv('BOT_TOKEN')
 
 
 print('\n------------------------\n/// MAX IS LEARNING ///')
@@ -54,13 +54,10 @@ lolrat_sticker = 'CAACAgIAAxkBAAECL1Fgd1gAAarkud3KyoiUMaV1PK7Ylh8AAu2DAAKezgsAAZ
 @bot.message_handler(commands=['karabas'])
 def stop_command(message: types.Message):
 	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
-	try:
-		file = open('./max_mind/user.txt')
-		bot.send_document(message.chat.id, file)
-	finally:
-		bot.send_message(message.chat.id, text='Ладно, я поехал.')
-		print(f'[{msg_id}] MaxLavrov_bot: "Ладно, я поехал."\n\t/// BOT WILL BE STOPPED ///')
-		os.system('python ./max_killer.py ' + str(os.getpid()))
+	unload_command(message)
+	bot.send_message(message.chat.id, text='Ладно, я поехал.')
+	print(f'[{msg_id}] MaxLavrov_bot: "Ладно, я поехал."\n\t/// BOT WILL BE STOPPED ///')
+	os.system('python ./max_killer.py ' + str(os.getpid()))
 
 @bot.message_handler(commands=['help'])
 def help_command(message: types.Message):
@@ -116,17 +113,25 @@ def help_full_command(message: types.Message):
 Всё может сломаться и обязательно сломается. Я уверен.')
 	print(f'[{msg_id}] MaxLavrov_bot: help_message\n\t/// HELP_FULL MESSAGE SENT ///')
 
-# @bot.message_handler(commands=['get_user_thoughts'])
-# def get_user_thoughts_command(message: types.Message):
-# 	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
-# 	try:
-# 		file = open('./max_mind/user.txt')
-# 		bot.send_message(message.chat.id, text='Вот что люди говорят:')
-# 		bot.send_document(message.chat.id, file)
-# 		print(f'[{msg_id}] MaxLavrov_bot: "Вот что люди говорят:"\n[{msg_id}] MaxLavrov_bot: <document>\n\t/// USER THOUGHTS SENT ///')
-# 	except FileNotFoundError:
-# 		bot.send_message(message.chat.id, text='Никто ещё ничего мне не сказал.')
-# 		print(f'[{msg_id}] MaxLavrov_bot: "Никто ещё ничего мне не сказал."\n\t/// NO USER THOUGHTS FOUND ///')
+def get_file(file_name, chat_id, msg_id, success_msg, failure_msg):
+	try:
+		if os.stat(file_name).st_size == 0:
+			bot.send_message(chat_id, text=failure_msg)
+			print(f'[{msg_id}] MaxLavrov_bot: "{failure_msg}"\n\t/// FILE {file_name} IS EMPTY ///')
+		else:
+			file = codecs.open(file_name, encoding='utf-8')
+			bot.send_message(chat_id, text=success_msg)
+			bot.send_document(chat_id, file)
+			print(f'[{msg_id}] MaxLavrov_bot: "{success_msg}"\n[{msg_id}] MaxLavrov_bot: <document>\n\t/// FILE {file_name} SENT ///')
+	except FileNotFoundError:
+		bot.send_message(chat_id, text=failure_msg)
+		print(f'[{msg_id}] MaxLavrov_bot: "{failure_msg}"\n\t/// FILE {file_name} NOT FOUND ///')
+
+@bot.message_handler(commands=['unload'])
+def unload_command(message: types.Message):
+	msg_id = f'{message.chat.id} - {message.chat.title if message.chat.title != None else "PM"} - {message.from_user.username}'
+	get_file('./max_mind/user.txt', message.chat.id, msg_id, 'Вот что люди говорят:', 'Никто ещё ничего мне не сказал.')
+	get_file('./max_mind/max.txt', message.chat.id, msg_id, 'А вот что я думаю:', 'Я пока ещё не думал.')
 
 @bot.message_handler(commands=['update_jokes'])
 def update_jokes_command(message: types.Message):
@@ -185,7 +190,7 @@ def message_listener(*msgs):
 				if not message.chat.id in STATE['is_listening']:
 					print(f'[{msg_id}] {message.from_user.username}: "{message.text}"')
 				for i in range(10):
-					bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAECL1Fgd1gAAarkud3KyoiUMaV1PK7Ylh8AAu2DAAKezgsAAZmqKq7ZUGksHwQ')
+					bot.send_sticker(message.chat.id, lolrat_sticker)
 					print(f'[{msg_id}] MaxLavrov_bot: <sticker>')
 					sleep(1)
 			elif is_name(msg):
