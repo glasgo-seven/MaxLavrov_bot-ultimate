@@ -1,4 +1,5 @@
 __pycache__
+max_mind/memories/*
 
 .token
 max_mind/jokes.txt

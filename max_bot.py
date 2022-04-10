@@ -5,12 +5,14 @@ import codecs
 import os
 from random import randint
 from time import time, sleep
+import sys
 
 import telebot
 from telebot import types
 
 from max_mind import max_setup, get_thought, get_fixed_thought, get_joke_b
 from max_learn import save_jokes
+from max_imgrec.resnext import image_recognition
 
 def get_token():
 	try:
@@ -272,9 +274,30 @@ def message_listener(*msgs):
 					print(f'[{msg_id}] MaxLavrov_bot: "Иду нахуй, Шэф!"\n\t/// LISTENING NO MORE ///')
 		elif message.content_type == 'photo':
 			print(f'[{msg_id}] {message.from_user.username}: <{message.content_type}>')
-			bot.send_message(message.chat.id, 'Шэф, ну не при всей кухне же!')
 			STATE['is_listening'][message.chat.id] = time()
-			print(f'[{msg_id}] MaxLavrov_bot: "Шэф, ну не при всей кухне же!"')
+			try:
+				file_id = message.photo[1].file_id
+				file_info = bot.get_file(file_id)
+				file = bot.download_file(file_info.file_path)
+				file_path = f"./max_mind/memories/{file_id}.jpg"
+				with open(file_path, 'wb') as new_file:
+					new_file.write(file)
+				img = open(file_path, 'rb')
+				res, txt = image_recognition(img)
+				rec1_p = res[1][0]*100
+				rec2_p = res[1][1]*100
+				rec = f'{res[0][0]} ({format(res[1][0]*100, ".2f")}%)'
+				if rec1_p // 2 <= rec2_p:
+					rec += f'\nНу или на крайний случай на...\n{res[0][1]} ({format(res[1][1]*100, ".2f")}%)'
+			except:
+				print(sys.exc_info())
+				rec = 'Какую-то залупу (100%)'
+			print(f'[{msg_id}] MaxLavrov_bot: "Классная пикча! Похоже на...\n{rec}"')
+			bot.send_message(message.chat.id, f'Классная пикча! Похоже на...\n{rec}')
+			#bot.send_message(message.chat.id, txt)
+			with open(file_path, 'w') as new_file:
+				new_file.write("")
+
 
 print('------------------------\n/// BOT IS POLLING ///\n\nChat log:\n')
 bot.set_update_listener(message_listener)
